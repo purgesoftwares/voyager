@@ -3,14 +3,28 @@
 @section('page_title','All '.$dataType->display_name_plural)
 
 @section('page_header')
-    <h1 class="page-title">
-        <i class="{{ $dataType->icon }}"></i> {{ $dataType->display_name_plural }}
-        @if (Voyager::can('add_'.$dataType->name))
-            <a href="{{ route('voyager.'.$dataType->slug.'.create') }}" class="btn btn-success">
-                <i class="voyager-plus"></i> Add New
-            </a>
-        @endif
-    </h1>
+<div class="row">
+    <div class="col-sm-6">
+        <h1 class="page-title">
+            <i class="{{ $dataType->icon }}"></i> {{ $dataType->display_name_plural }}
+            @if (Voyager::can('add_'.$dataType->name))
+                <a href="{{ route('voyager.'.$dataType->slug.'.create') }}" class="btn btn-success">
+                    <i class="voyager-plus"></i> Add New
+                </a>
+            @endif
+        </h1>
+    </div>
+    <div class="search-box text-right">
+        <form method="get" action="" class="form-inline">
+            <div class="form-group">
+                <input type="text" name="search" 
+                class="form-control name" value="{{ request()->input('search') }}">
+                <button class="btn btn-info btn-md form-control" 
+                id="search_button" >Search</button>
+            </div>
+        </form>
+    </div>
+</div>
     @include('voyager::multilingual.language-selector')
 @stop
 
@@ -120,7 +134,7 @@
                                 <div role="status" class="show-res" aria-live="polite">Showing {{ $dataTypeContent->firstItem() }} to {{ $dataTypeContent->lastItem() }} of {{ $dataTypeContent->total() }} entries</div>
                             </div>
                             <div class="pull-right">
-                                {{ $dataTypeContent->links() }}
+                                {{ $dataTypeContent->appends(request()->input())->links() }}
                             </div>
                         @endif
                     </div>

@@ -27,6 +27,9 @@ class VoyagerBreadController extends Controller
         // GET THE SLUG, ex. 'posts', 'pages', etc.
         $slug = $this->getSlug($request);
 
+        // Get the search query parameter 
+        $search_key = $request->search;
+
         // GET THE DataType based on the slug
         $dataType = Voyager::model('DataType')->where('slug', '=', $slug)->first();
 
@@ -41,13 +44,39 @@ class VoyagerBreadController extends Controller
 
             $relationships = $this->getRelationships($dataType);
 
-            if ($model->timestamps) {
-                $dataTypeContent = call_user_func([$model->with($relationships)->latest(), $getter]);
-            } else {
-                $dataTypeContent = call_user_func([
-                    $model->with($relationships)->orderBy($model->getKeyName(), 'DESC'),
-                    $getter,
-                ]);
+            if(strlen($search_text))
+            {
+
+                if ($model->timestamps) {
+                    $dataTypeContent = call_user_func([$model
+                        ->where(function ($query) use($conditions){
+                            foreach ($conditions as $key => $condition) {
+                                $condition =  [$condition];
+                                $query->orWhere($condition);
+                            }        
+                        })->orderBy('created_at', 'DESC')
+                        ->with($relationships)->latest(), $getter]);
+                } else {
+                    $dataTypeContent = call_user_func([
+                        $model->where(function ($query) use($conditions){
+                            foreach ($conditions as $key => $condition) {
+                                $condition =  [$condition];
+                                $query->orWhere($condition);
+                            }        
+                        })->with($relationships)->orderBy($model->getKeyName(), 'DESC'),
+                        $getter,
+                    ]);
+                }
+            }else
+            {
+                if ($model->timestamps) {
+                    $dataTypeContent = call_user_func([$model->with($relationships)->latest(), $getter]);
+                } else {
+                    $dataTypeContent = call_user_func([
+                        $model->with($relationships)->orderBy($model->getKeyName(), 'DESC'),
+                        $getter,
+                    ]);
+                }
             }
 
             //Replace relationships' keys for labels and create READ links if a slug is provided.

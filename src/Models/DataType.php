@@ -39,6 +39,11 @@ class DataType extends Model
         return $this->rows()->where('browse', 1);
     }
 
+    public function searchRows()
+    {
+        return $this->rows()->where('search', 1);
+    }
+
     public function readRows()
     {
         return $this->rows()->where('read', 1);

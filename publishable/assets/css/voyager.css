@@ -1411,3 +1411,8 @@ ul.checkbox label {
 .alerts .alert>ul {
   margin-top: 0;
 }
+
+/************* for search box @purgesoft *************/
+.search-box{
+  margin: 30px 30px 0;
+}

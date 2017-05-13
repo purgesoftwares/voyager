@@ -48,6 +48,24 @@ trait BreadRelationshipParser
     }
 
     /**
+     * Build the conditions array for the model's search.
+     *
+     * @param DataType $dataType, String searchKey
+     *
+     * @return array
+     */
+    protected function getConditions(DataType $dataType, $searchKey)
+    {
+        $conditions = [];
+       
+        $dataType->searchRows->each(function ($item) use (&$conditions, $searchKey) {
+            $conditions[] = [$item->field, "LIKE", "%$searchKey%"];
+        });
+        
+        return $conditions;
+    }
+
+    /**
      * Replace relationships' keys for labels and create READ links if a slug is provided.
      *
      * @param  $dataTypeContent     Can be either an eloquent Model, Collection or LengthAwarePaginator instance.
